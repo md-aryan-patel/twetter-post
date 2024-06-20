@@ -12,7 +12,7 @@ const getTweetsFromTags = async (tag, continuationToken = "") => {
       continuation_token: continuationToken,
     },
     headers: {
-      "x-rapidapi-key": "b4819fe260msh0758222fe87b9dbp14f9a3jsn5799f99e843f",
+      "x-rapidapi-key": "99336b0848msh39478f44adbc460p18fd66jsn9e071aedaab1",
       "x-rapidapi-host": "twitter154.p.rapidapi.com",
     },
   };
@@ -29,15 +29,73 @@ const getTweetsFromTags = async (tag, continuationToken = "") => {
   }
 };
 
+const getUserTweetsContinuation = async (username, continuationToken) => {
+  const options = {
+    method: "GET",
+    url: "https://twitter154.p.rapidapi.com/user/tweets/continuation",
+    params: {
+      username: username,
+      limit: "3",
+      continuation_token: continuationToken,
+      include_replies: "false",
+    },
+    headers: {
+      "x-rapidapi-key": "99336b0848msh39478f44adbc460p18fd66jsn9e071aedaab1",
+      "x-rapidapi-host": "twitter154.p.rapidapi.com",
+    },
+  };
+
+  try {
+    const response = await axios.request(options);
+    return {
+      tweets: response.data.results,
+      continuation_token: response.data.continuation_token,
+    };
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
+const getUserTweets = async (username) => {
+  const options = {
+    method: "GET",
+    url: "https://twitter154.p.rapidapi.com/user/tweets",
+    params: {
+      username: username,
+      limit: 3,
+      include_replies: "false",
+      include_pinned: "false",
+    },
+    headers: {
+      "x-rapidapi-key": "99336b0848msh39478f44adbc460p18fd66jsn9e071aedaab1",
+      "x-rapidapi-host": "twitter154.p.rapidapi.com",
+    },
+  };
+
+  try {
+    const response = await axios.request(options);
+    return {
+      tweets: response.data.results,
+      continuation_token: response.data.continuation_token,
+    };
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
 const main = async () => {
-  const res = await getTweetsFromTags("python");
-  res.tweets.map((tweet) => {
-    console.log(tweet);
-  });
+  const data = await getUserTweets("marcmarquez93");
+  console.log(data);
 };
 
 main().catch((err) => {
   console.log(err);
 });
 
-module.exports = { getTweetsFromTags };
+module.exports = {
+  getTweetsFromTags,
+  getUserTweets,
+  getUserTweetsContinuation,
+};
